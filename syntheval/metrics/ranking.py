@@ -27,3 +27,25 @@ def kendall_tau_b(x: List[float], y: List[float]) -> float:
                 discordant += 1
     denom = math.sqrt((concordant + discordant + t_x) * (concordant + discordant + t_y))
     return round((concordant - discordant) / denom, 4) if denom > 0 else 0.0
+
+def spearman_correlation(x: List[float], y: List[float]) -> float:
+    n = len(x)
+    indexed_x = sorted(range(n), key=lambda i: x[i])
+    indexed_y = sorted(range(n), key=lambda i: y[i])
+    rx = [0.0] * n
+    ry = [0.0] * n
+    for rank, idx in enumerate(indexed_x):
+        rx[idx] = rank + 1
+    for rank, idx in enumerate(indexed_y):
+        ry[idx] = rank + 1
+    d_sq = sum((a - b) ** 2 for a, b in zip(rx, ry))
+    return round(1.0 - (6.0 * d_sq) / (n * (n * n - 1)), 4)
+
+def ndcg_at_k(relevance_scores: List[float], k: int = 5) -> float:
+    cutoff = min(len(relevance_scores), k)
+    if cutoff == 0:
+        return 0.0
+    dcg = sum((2 ** r - 1) / math.log2(idx + 2) for idx, r in enumerate(relevance_scores[:cutoff]))
+    ideal = sorted(relevance_scores, reverse=True)[:cutoff]
+    idcg = sum((2 ** r - 1) / math.log2(idx + 2) for idx, r in enumerate(ideal))
+    return round(dcg / idcg, 4) if idcg > 0 else 0.0
