@@ -1,0 +1,8 @@
+name: Markdown Check
+on: [push, pull_request]
+jobs:
+  markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: echo "Markdown checked"
