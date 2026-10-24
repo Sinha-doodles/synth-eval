@@ -1,4 +1,4 @@
-"""Semantic hallucination and citation attribution engine with fast caching."""
+"""Semantic hallucination and citation attribution engine."""
 import re
 from typing import List, Dict, Any, Set
 from syntheval.evaluators.base import BaseEvaluator
@@ -10,8 +10,6 @@ class HallucinationEvaluator(BaseEvaluator):
         "in", "on", "at", "to", "for", "with", "by", "that", "this", "it"
     })
     TOKEN_REGEX = re.compile(r"\b[a-zA-Z0-9_]{2,}\b")
-    SENT_REGEX = re.compile(r"(?<=[.!?])\s+|
-+")
 
     def __init__(self, min_token_overlap: float = 0.45):
         self.min_token_overlap = min_token_overlap
@@ -21,7 +19,7 @@ class HallucinationEvaluator(BaseEvaluator):
         return "semantic_hallucination_evaluator"
 
     def _extract_claims(self, text: str) -> List[str]:
-        raw_sentences = self.SENT_REGEX.split(text)
+        raw_sentences = re.split(r"(?<=[.!?])\s+|\n+", text)
         return [s.strip() for s in raw_sentences if len(s.strip().split()) >= 3]
 
     def _tokenize(self, text: str) -> Set[str]:
